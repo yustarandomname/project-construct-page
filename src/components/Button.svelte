@@ -2,7 +2,6 @@
   import Icon from "./Icon.svelte";
 
   export let state: "default" | "active" | "destructive" = "default";
-  export let width: "default" | "flexible" | "fixed" = "default";
   export let size: "small" | "medium" | "large" = "medium";
   export let icon: string = "";
 </script>
@@ -11,7 +10,6 @@
   class="button"
   class:active={state == "active"}
   class:destructive={state == "destructive"}
-  class:fixed={width == "fixed"}
   class:small={size == "small"}
   class:large={size == "large"}
   on:click
@@ -33,12 +31,18 @@
     cursor: pointer;
     font-size: var(--font-size, 1em);
     transition: 1s box-shadow;
+    user-select: none;
   }
 
   .small {
     border-radius: 50%;
     padding: 0.2em;
     line-height: 0;
+  }
+
+  .large {
+    width: 100%;
+    padding: 0.75em;
   }
 
   .active {

@@ -1,13 +1,15 @@
 <script>
   import { mdiPlus } from "@mdi/js";
   import Button from "./Button.svelte";
+
   export let name = "/";
+  export let hasPermission = false;
 
   let isOpen = false;
 </script>
 
 <div class="file attach-left">
-  <div class="line" />
+  <div class="line" class:hasPermission />
 
   {#if !!Object.keys($$slots).length}
     <div class="attach-below">
@@ -43,14 +45,21 @@
   .attach-left,
   .attach-right {
     display: flex;
+  }
+
+  .attach-right {
     align-items: center;
   }
 
   .attach-right > .line,
   .attach-left > .line {
-    height: 0.1em;
+    height: 2px;
     width: 0.5em;
     background: var(--inactive-color);
+  }
+
+  .attach-left > .line {
+    margin-top: 1em;
   }
 
   /* Long line */
@@ -58,10 +67,15 @@
     display: flex;
   }
 
-  .attach-below .line {
+  .attach-below > .content > .line {
     height: auto;
     margin: 0 0 0 1em;
-    width: 0.1em;
+    width: 2px;
     background: var(--inactive-color);
+  }
+
+  /* Has Permission */
+  .hasPermission.line {
+    background: var(--destructive-color);
   }
 </style>

@@ -1,0 +1,48 @@
+{
+  "Home": {
+    "name": "Home",
+    "content": {},
+    "properties": {},
+    "children": [
+      {
+        "name": "Public",
+        "content": {},
+        "properties": {},
+        "children": [
+          {
+            "name": "Foto's",
+            "content": {},
+            "properties": {
+              "permission": ["ledenFotos alleen voor leden"]
+            },
+            "children": []
+          }
+        ]
+      },
+      {
+        "name": "Leden",
+        "content": {},
+        "properties": {},
+        "children": []
+      },
+      {
+        "name": "Zoeken",
+        "content": {},
+        "properties": {},
+        "children": []
+      },
+      {
+        "name": "Commisies",
+        "content": {},
+        "properties": {},
+        "children": []
+      },
+      {
+        "name": "Bestuur (admin)",
+        "content": {},
+        "properties": {},
+        "children": []
+      }
+    ]
+  }
+}
