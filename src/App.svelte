@@ -1,8 +1,22 @@
 <script lang="ts">
+  import { initializeApp } from "firebase/app";
+  import { getFirestore, doc } from "firebase/firestore";
+
   import RootFile from "./components/RootFile.svelte";
-  import File from "./components/File.svelte";
 
   import Properties from "./widgets/Properties.svelte";
+
+  const firebaseApp = initializeApp({
+    apiKey: "AIzaSyCilQEwzkyJPy98VVrtYbjCRah8q_pXfGs",
+    authDomain: "construct-page.firebaseapp.com",
+    projectId: "construct-page",
+    storageBucket: "construct-page.appspot.com",
+    messagingSenderId: "644552624249",
+    appId: "1:644552624249:web:a7c2ffdbda50e1ee10aca8",
+  });
+
+  const db = getFirestore();
+  const docRef = doc(db, "pages", "MWdhMh3lW2vKY1rkjyWl");
 </script>
 
 <div class="wrapper">
@@ -12,42 +26,7 @@
       <div class="search">search</div>
     </div>
 
-    <RootFile>
-      <File name="public">
-        <File name="Foto's" hasPermission />
-        <File name="Weer" hasPermission />
-        <File name="Snelle info" />
-      </File>
-      <File name="leden" hasPermission>
-        <File name="afschrijfboek" />
-        <File name="eetlijst" />
-        <File name="agenda" />
-      </File>
-      <File name="zoeken">
-        <File name="pagina's" />
-        <File name="evenmenten" />
-        <File name="fotos" hasPermission />
-        <File name="boten" />
-        <File name="leden" hasPermission />
-        <File name="commissies" />
-        <File name="vloten" />
-      </File>
-      <File name="Commissies">
-        <File name="Bixy" hasPermission>
-          <File name="Eetlijst aan-maken/passen" hasPermission />
-          <File name="Inschrijven voor koken" />
-          <File name="Blog schrijven" />
-        </File>
-        <File name="Webcie" hasPermission>
-          <File name="Blog schrijven" />
-        </File>
-      </File>
-      <File name="Bestuur (admin)" hasPermission>
-        <File name="Persoon uitschrijven" />
-        <File name="Mail schrijven" />
-        <File name="Blog schrijven" />
-      </File>
-    </RootFile>
+    <RootFile ref={docRef} />
   </div>
 
   <div class="content">

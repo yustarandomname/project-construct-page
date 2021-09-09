@@ -1,9 +1,15 @@
 <script lang="ts">
+  import properties from "../stores/propertyStore";
   import Button from "../components/Button.svelte";
   import { mdiArrowUp, mdiArrowDown, mdiDelete, mdiPlus, mdiExclamation } from "@mdi/js";
+
+  $: console.log($properties);
 </script>
 
 <div class="propertyWrapper">
+  <div class="subHeader">Name</div>
+  <p>{$properties.name}</p>
+
   <div class="subHeader">Move</div>
   <div class="splitButtons">
     <Button size="large" icon={mdiArrowUp}>Up</Button>
@@ -11,6 +17,11 @@
   </div>
 
   <div class="subHeader">Permissions</div>
+  {#if $properties?.permissions}
+    {#each $properties?.permissions as permission}
+      <p>{permission}</p>
+    {/each}
+  {/if}
   <Button size="large" icon={mdiPlus}>Add Permission</Button>
 
   <div class="subHeader">Top 3 features</div>

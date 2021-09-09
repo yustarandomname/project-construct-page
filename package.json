@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@mdi/js": "^6.1.95",
+    "firebase": "^9.0.1",
     "sirv-cli": "^1.0.0"
   }
 }
