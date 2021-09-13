@@ -1,77 +1,93 @@
 <script lang="ts">
   import type { DocumentReference, DocumentData } from "@firebase/firestore";
+  import { getFirestore, collection, addDoc, updateDoc, increment } from "firebase/firestore";
   import type { Page, Properties } from "../types/database";
-  import { getFirestore, collection, getDoc, getDocs, query, orderBy } from "firebase/firestore";
 
   import { mdiPlus } from "@mdi/js";
   import Button from "./Button.svelte";
+  import InputButton from "./InputButton.svelte";
+  import Collection from "../sveltefire/Collection.svelte";
 
   import properties from "../stores/propertyStore";
 
   export let ref: DocumentReference<DocumentData>;
   export let data: Page;
-  export let parentProperties: Properties;
+  export let parentProperties: { props: Properties; ref: DocumentReference<DocumentData> };
 
-  let isOpen = false;
   const db = getFirestore();
+  let isOpen = false;
+  let newPageVisible = false;
+  let newPageName: string = "";
+  let newPageDisabled = false;
 
-  function toggleOpen() {
-    if (isOpen) {
-      properties.set(parentProperties);
-      isOpen = false;
-    } else {
-      properties.set(data.properties);
-      isOpen = true;
-    }
+  function setProperties() {
+    if (isOpen) properties.set(parentProperties);
+    else properties.set({ props: data.properties, ref });
   }
 
-  async function getChildren() {
-    const childrenRef = collection(db, ref.path + "/components");
-    const queryChildren = query(childrenRef, orderBy("properties.index"));
-    const children = await getDocs(queryChildren);
+  function toggleOpen() {
+    setProperties();
+    isOpen = !isOpen;
+  }
 
-    let res: { ref: DocumentReference<DocumentData>; data: Page }[] = [];
-    children.forEach((child) => {
-      res.push({
-        ref: child.ref,
-        data: child.data() as Page,
+  async function handleNewPage() {
+    if (newPageName) {
+      newPageDisabled = true;
+      const collectionRef = collection(db, ref.path + "/components");
+
+      await addDoc(collectionRef, {
+        name: newPageName,
+        children: 0,
+        content: {},
+        properties: {
+          name: newPageName,
+        },
       });
-    });
 
-    return res;
+      await updateDoc(ref, {
+        children: increment(1),
+      });
+
+      newPageDisabled = false;
+      newPageVisible = false;
+      newPageName = "";
+    }
   }
 </script>
 
 <div class="file attach-left">
   <div class="line" class:hasPermission={false} />
-  {#if data.children > 0}
+  {#if data.children > 0 || newPageVisible}
     <div class="attach-below">
-      <Button state={isOpen ? "active" : "default"} on:click={toggleOpen}>{data.name}</Button>
+      <Button state={isOpen ? "active" : "default"} on:click={toggleOpen}>{data.properties.name}</Button>
 
-      {#if isOpen}
+      {#if isOpen || newPageVisible}
         <div class="content">
           <div class="line" />
           <div class="pages">
-            {#await getChildren()}
-              {#each new Array(data.children) as _}
-                <Button>Loading</Button>
-              {/each}
-            {:then children}
+            <Collection path={ref.path + "/components"} let:data={children}>
               {#each children as child}
-                <svelte:self ref={child.ref} data={child.data} parentProperties={data.properties} />
+                <svelte:self ref={child.ref} data={child} parentProperties={{ props: data.properties, ref: child.ref }} />
               {/each}
-            {/await}
+            </Collection>
+
+            {#if newPageVisible}
+              <InputButton on:submit={handleNewPage} disabled={newPageDisabled} bind:value={newPageName} />
+            {/if}
           </div>
         </div>
-        <Button size="small" icon={mdiPlus} --margin="0 0.35em" />
+
+        {#if !newPageVisible}
+          <Button size="small" icon={mdiPlus} --margin="0 0.35em" on:click={() => (newPageVisible = true)} />
+        {/if}
       {/if}
     </div>
   {:else}
     <div class="attach-right">
-      <Button state={isOpen ? "active" : "default"} on:click={toggleOpen}>{data.name}</Button>
+      <Button state={isOpen ? "active" : "default"} on:click={toggleOpen}>{data.properties.name}</Button>
 
       <div class="line" />
-      <Button size="small" icon={mdiPlus} />
+      <Button size="small" icon={mdiPlus} on:click={() => (newPageVisible = true)} />
     </div>
   {/if}
 </div>

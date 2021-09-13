@@ -2,13 +2,18 @@
   import properties from "../stores/propertyStore";
   import Button from "../components/Button.svelte";
   import { mdiArrowUp, mdiArrowDown, mdiDelete, mdiPlus, mdiExclamation } from "@mdi/js";
+  import { deleteDoc } from "firebase/firestore";
 
-  $: console.log($properties);
+  async function deleteRef() {
+    if ($properties.props.name == "Home") return;
+
+    await deleteDoc($properties.ref);
+  }
 </script>
 
 <div class="propertyWrapper">
   <div class="subHeader">Name</div>
-  <p>{$properties.name}</p>
+  <p>{$properties.props.name}</p>
 
   <div class="subHeader">Move</div>
   <div class="splitButtons">
@@ -17,8 +22,8 @@
   </div>
 
   <div class="subHeader">Permissions</div>
-  {#if $properties?.permissions}
-    {#each $properties?.permissions as permission}
+  {#if $properties.props.permissions}
+    {#each $properties?.props.permissions as permission}
       <p>{permission}</p>
     {/each}
   {/if}
@@ -33,7 +38,7 @@
   <Button size="large" icon={mdiPlus}>Add Note</Button>
 
   <div class="subHeader">Remove</div>
-  <Button size="large" icon={mdiDelete} state="destructive">Delete</Button>
+  <Button size="large" icon={mdiDelete} state="destructive" on:click={deleteRef}>Delete</Button>
 </div>
 
 <style>

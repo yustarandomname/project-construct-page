@@ -3,10 +3,9 @@
   import { getFirestore, doc } from "firebase/firestore";
 
   import RootFile from "./components/RootFile.svelte";
-
   import Properties from "./widgets/Properties.svelte";
 
-  const firebaseApp = initializeApp({
+  initializeApp({
     apiKey: "AIzaSyCilQEwzkyJPy98VVrtYbjCRah8q_pXfGs",
     authDomain: "construct-page.firebaseapp.com",
     projectId: "construct-page",
@@ -23,7 +22,6 @@
   <div class="tree">
     <div class="header">
       <h1>Tree</h1>
-      <div class="search">search</div>
     </div>
 
     <RootFile ref={docRef} />
@@ -52,7 +50,7 @@
   .tree,
   .properties,
   .content {
-    width: 30em;
+    width: 20em;
     height: 100vh;
     padding: 5.5em 1em 0;
     position: relative;
@@ -64,7 +62,6 @@
   }
   .properties {
     border-left: 1px solid #000;
-    width: 20em;
   }
   .content {
     flex-grow: 1;
@@ -80,13 +77,5 @@
     align-items: center;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(4px) saturate(1.5);
-  }
-
-  .tree > .header {
-    width: 27em;
-  }
-
-  .search {
-    color: var(--inactive-color);
   }
 </style>

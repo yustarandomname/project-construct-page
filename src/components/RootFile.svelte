@@ -6,6 +6,7 @@
   import { mdiPlus } from "@mdi/js";
   import Button from "./Button.svelte";
   import File from "./File.svelte";
+  import Collection from "../sveltefire/Collection.svelte";
 
   import properties from "../stores/propertyStore";
 
@@ -17,7 +18,7 @@
     const file = await getDoc(ref);
     const fileData = file.data() as Page;
 
-    properties.set(fileData.properties);
+    properties.set({ props: fileData.properties, ref });
 
     return fileData;
   }
@@ -49,15 +50,11 @@
       <div class="content">
         <div class="line" />
         <div class="pages">
-          {#await getChildren()}
-            {#each new Array(data.children) as _}
-              <Button>Loading</Button>
-            {/each}
-          {:then children}
+          <Collection path={ref.path + "/components"} let:data={children}>
             {#each children as child}
-              <File ref={child.ref} data={child.data} parentProperties={data.properties} />
+              <File ref={child.ref} data={child} parentProperties={{ props: data.properties, ref: child.ref }} />
             {/each}
-          {/await}
+          </Collection>
         </div>
       </div>
       <Button size="small" icon={mdiPlus} --margin="0 0.35em" />
