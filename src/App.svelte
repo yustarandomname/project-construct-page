@@ -50,7 +50,7 @@
   .tree,
   .properties,
   .content {
-    width: 20em;
+    min-width: 20em;
     height: 100vh;
     padding: 5.5em 1em 0;
     position: relative;

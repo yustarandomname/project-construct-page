@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { DocumentReference, DocumentData } from "@firebase/firestore";
   import type { Page } from "../types/database";
-  import { getFirestore, collection, getDoc, getDocs, query, orderBy } from "firebase/firestore";
+  import { getDoc } from "firebase/firestore";
 
   import { mdiPlus } from "@mdi/js";
   import Button from "./Button.svelte";
@@ -12,31 +12,13 @@
 
   export let ref: DocumentReference<DocumentData>;
 
-  const db = getFirestore();
-
   async function getRootFile() {
     const file = await getDoc(ref);
     const fileData = file.data() as Page;
 
-    properties.set({ props: fileData.properties, ref });
+    properties.set({ props: fileData.properties, ref, parentRef: null });
 
     return fileData;
-  }
-
-  async function getChildren() {
-    const childrenRef = collection(db, ref.path + "/components");
-    const queryChildren = query(childrenRef, orderBy("properties.index"));
-    const children = await getDocs(queryChildren);
-
-    let res: { ref: DocumentReference<DocumentData>; data: Page }[] = [];
-    children.forEach((child) => {
-      res.push({
-        ref: child.ref,
-        data: child.data() as Page,
-      });
-    });
-
-    return res;
   }
 </script>
 
@@ -52,7 +34,7 @@
         <div class="pages">
           <Collection path={ref.path + "/components"} let:data={children}>
             {#each children as child}
-              <File ref={child.ref} data={child} parentProperties={{ props: data.properties, ref: child.ref }} />
+              <File ref={child.ref} data={child} parentProperties={{ props: data.properties, ref: child.ref, parentRef: ref }} />
             {/each}
           </Collection>
         </div>

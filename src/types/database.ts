@@ -2,6 +2,7 @@ export interface Properties {
   name: string;
   index?: number;
   permissions?: string[];
+  topFeatures?: string[];
 }
 
 export interface Page {

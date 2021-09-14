@@ -3,7 +3,11 @@ import type { DocumentReference, DocumentData } from "@firebase/firestore";
 
 import { writable } from "svelte/store";
 
-const defaultProperty: { props: Properties; ref: DocumentReference<DocumentData> } = { props: { name: "no name" }, ref: null };
+const defaultProperty: { props: Properties; ref: DocumentReference<DocumentData>; parentRef: DocumentReference<DocumentData> } = {
+  props: { name: "no name" },
+  ref: null,
+  parentRef: null,
+};
 
 function createPropertyStore() {
   const { subscribe, set } = writable(defaultProperty);

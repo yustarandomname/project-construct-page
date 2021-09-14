@@ -12,7 +12,7 @@
 
   export let ref: DocumentReference<DocumentData>;
   export let data: Page;
-  export let parentProperties: { props: Properties; ref: DocumentReference<DocumentData> };
+  export let parentProperties: { props: Properties; ref: DocumentReference<DocumentData>; parentRef: DocumentReference<DocumentData> };
 
   const db = getFirestore();
   let isOpen = false;
@@ -22,12 +22,18 @@
 
   function setProperties() {
     if (isOpen) properties.set(parentProperties);
-    else properties.set({ props: data.properties, ref });
+    else properties.set({ props: data.properties, ref, parentRef: parentProperties.parentRef });
   }
 
   function toggleOpen() {
     setProperties();
     isOpen = !isOpen;
+  }
+
+  function cancelNewPage() {
+    newPageDisabled = false;
+    newPageVisible = false;
+    newPageName = "";
   }
 
   async function handleNewPage() {
@@ -48,9 +54,7 @@
         children: increment(1),
       });
 
-      newPageDisabled = false;
-      newPageVisible = false;
-      newPageName = "";
+      cancelNewPage();
     }
   }
 </script>
@@ -59,7 +63,7 @@
   <div class="line" class:hasPermission={false} />
   {#if data.children > 0 || newPageVisible}
     <div class="attach-below">
-      <Button state={isOpen ? "active" : "default"} on:click={toggleOpen}>{data.properties.name}</Button>
+      <Button state={isOpen ? "active" : "default"} on:click={toggleOpen}>{data.properties.name} ({data.children})</Button>
 
       {#if isOpen || newPageVisible}
         <div class="content">
@@ -67,12 +71,18 @@
           <div class="pages">
             <Collection path={ref.path + "/components"} let:data={children}>
               {#each children as child}
-                <svelte:self ref={child.ref} data={child} parentProperties={{ props: data.properties, ref: child.ref }} />
+                <svelte:self ref={child.ref} data={child} parentProperties={{ props: data.properties, ref: child.ref, parentRef: ref }} />
               {/each}
             </Collection>
 
             {#if newPageVisible}
-              <InputButton on:submit={handleNewPage} disabled={newPageDisabled} bind:value={newPageName} />
+              <InputButton
+                on:cancel={cancelNewPage}
+                on:submit={handleNewPage}
+                bind:value={newPageName}
+                prependLine={true}
+                disabled={newPageDisabled}
+              />
             {/if}
           </div>
         </div>
@@ -84,7 +94,7 @@
     </div>
   {:else}
     <div class="attach-right">
-      <Button state={isOpen ? "active" : "default"} on:click={toggleOpen}>{data.properties.name}</Button>
+      <Button state={isOpen ? "active" : "default"} on:click={toggleOpen}>{data.properties.name} ({data.children})</Button>
 
       <div class="line" />
       <Button size="small" icon={mdiPlus} on:click={() => (newPageVisible = true)} />
