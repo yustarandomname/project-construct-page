@@ -4,6 +4,7 @@
   import type { Page, Properties } from "../types/database";
 
   import { mdiPlus } from "@mdi/js";
+  import openStore from "../stores/openStore";
   import Button from "./Button.svelte";
   import InputButton from "./InputButton.svelte";
   import Collection from "../sveltefire/Collection.svelte";
@@ -12,22 +13,21 @@
 
   export let ref: DocumentReference<DocumentData>;
   export let data: Page;
-  export let parentProperties: { props: Properties; ref: DocumentReference<DocumentData>; parentRef: DocumentReference<DocumentData> };
+  export let parentProperties: {
+    props: Properties;
+    ref: DocumentReference<DocumentData>;
+    parentRef: DocumentReference<DocumentData>;
+    path: string[];
+  };
 
   const db = getFirestore();
-  let isOpen = false;
   let newPageVisible = false;
   let newPageName: string = "";
   let newPageDisabled = false;
 
-  function setProperties() {
-    if (isOpen) properties.set(parentProperties);
-    else properties.set({ props: data.properties, ref, parentRef: parentProperties.parentRef });
-  }
-
   function toggleOpen() {
-    setProperties();
-    isOpen = !isOpen;
+    properties.set({ props: data.properties, ref, parentRef: parentProperties.parentRef });
+    openStore.set(parentProperties.path);
   }
 
   function cancelNewPage() {
@@ -63,15 +63,26 @@
   <div class="line" class:hasPermission={false} />
   {#if data.children > 0 || newPageVisible}
     <div class="attach-below">
-      <Button state={isOpen ? "active" : "default"} on:click={toggleOpen}>{data.properties.name} ({data.children})</Button>
+      <Button state={$openStore.last == data.properties.name ? "active" : "default"} on:click={toggleOpen}
+        >{data.properties.name} ({data.children})</Button
+      >
 
-      {#if isOpen || newPageVisible}
+      {#if $openStore.path.includes(data.properties.name) || newPageVisible}
         <div class="content">
           <div class="line" />
           <div class="pages">
             <Collection path={ref.path + "/components"} let:data={children}>
               {#each children as child}
-                <svelte:self ref={child.ref} data={child} parentProperties={{ props: data.properties, ref: child.ref, parentRef: ref }} />
+                <svelte:self
+                  ref={child.ref}
+                  data={child}
+                  parentProperties={{
+                    props: data.properties,
+                    ref: child.ref,
+                    parentRef: ref,
+                    path: [...parentProperties.path, child.properties.name],
+                  }}
+                />
               {/each}
             </Collection>
 
@@ -94,7 +105,9 @@
     </div>
   {:else}
     <div class="attach-right">
-      <Button state={isOpen ? "active" : "default"} on:click={toggleOpen}>{data.properties.name} ({data.children})</Button>
+      <Button state={$openStore.last == data.properties.name ? "active" : "default"} on:click={toggleOpen}
+        >{data.properties.name} ({data.children})</Button
+      >
 
       <div class="line" />
       <Button size="small" icon={mdiPlus} on:click={() => (newPageVisible = true)} />

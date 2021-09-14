@@ -10,6 +10,7 @@
   import File from "./File.svelte";
   import Collection from "../sveltefire/Collection.svelte";
 
+  import openStore from "../stores/openStore";
   import properties from "../stores/propertyStore";
 
   export let ref: DocumentReference<DocumentData>;
@@ -26,6 +27,11 @@
     properties.set({ props: fileData.properties, ref, parentRef: null });
 
     return fileData;
+  }
+
+  function setHome(page: Page) {
+    openStore.setHome();
+    properties.set({ props: page.properties, ref, parentRef: null });
   }
 
   function cancelNewPage() {
@@ -62,14 +68,18 @@
 {:then data}
   {#if data.children > 0 || newPageVisible}
     <div class="attach-below">
-      <Button state="active">{data.name}</Button>
+      <Button state="active" on:click={() => setHome(data)}>{data.name}</Button>
 
       <div class="content">
         <div class="line" />
         <div class="pages">
           <Collection path={ref.path + "/components"} let:data={children}>
             {#each children as child}
-              <File ref={child.ref} data={child} parentProperties={{ props: data.properties, ref: child.ref, parentRef: ref }} />
+              <File
+                ref={child.ref}
+                data={child}
+                parentProperties={{ props: data.properties, ref: child.ref, parentRef: ref, path: ["Home", child?.properties.name] }}
+              />
             {/each}
           </Collection>
 
