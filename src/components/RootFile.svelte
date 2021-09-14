@@ -1,16 +1,23 @@
 <script lang="ts">
   import type { DocumentReference, DocumentData } from "@firebase/firestore";
   import type { Page } from "../types/database";
+  import { getFirestore, collection, addDoc, updateDoc, increment } from "firebase/firestore";
   import { getDoc } from "firebase/firestore";
 
   import { mdiPlus } from "@mdi/js";
   import Button from "./Button.svelte";
+  import InputButton from "./InputButton.svelte";
   import File from "./File.svelte";
   import Collection from "../sveltefire/Collection.svelte";
 
   import properties from "../stores/propertyStore";
 
   export let ref: DocumentReference<DocumentData>;
+
+  const db = getFirestore();
+  let newPageVisible = false;
+  let newPageName: string = "";
+  let newPageDisabled = false;
 
   async function getRootFile() {
     const file = await getDoc(ref);
@@ -20,12 +27,40 @@
 
     return fileData;
   }
+
+  function cancelNewPage() {
+    newPageDisabled = false;
+    newPageVisible = false;
+    newPageName = "";
+  }
+
+  async function handleNewPage() {
+    if (newPageName) {
+      newPageDisabled = true;
+      const collectionRef = collection(db, ref.path + "/components");
+
+      await addDoc(collectionRef, {
+        name: newPageName,
+        children: 0,
+        content: {},
+        properties: {
+          name: newPageName,
+        },
+      });
+
+      await updateDoc(ref, {
+        children: increment(1),
+      });
+
+      cancelNewPage();
+    }
+  }
 </script>
 
 {#await getRootFile()}
   <Button state="active">Home</Button>
 {:then data}
-  {#if data.children > 0}
+  {#if data.children > 0 || newPageVisible}
     <div class="attach-below">
       <Button state="active">{data.name}</Button>
 
@@ -37,16 +72,20 @@
               <File ref={child.ref} data={child} parentProperties={{ props: data.properties, ref: child.ref, parentRef: ref }} />
             {/each}
           </Collection>
+
+          {#if newPageVisible}
+            <InputButton on:cancel={cancelNewPage} on:submit={handleNewPage} bind:value={newPageName} prependLine={true} disabled={newPageDisabled} />
+          {/if}
         </div>
       </div>
-      <Button size="small" icon={mdiPlus} --margin="0 0.35em" />
+      <Button size="small" icon={mdiPlus} --margin="0 0.35em" on:click={() => (newPageVisible = true)} />
     </div>
   {:else}
     <div class="attach-right">
       <Button state="active">{data.name}</Button>
 
       <div class="line" />
-      <Button size="small" icon={mdiPlus} />
+      <Button size="small" icon={mdiPlus} on:click={() => (newPageVisible = true)} />
     </div>
   {/if}
 {/await}
