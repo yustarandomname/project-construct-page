@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { DocumentReference, DocumentData } from "@firebase/firestore";
-  import { getFirestore, collection, addDoc, updateDoc, increment } from "firebase/firestore";
   import type { Page, Properties } from "../types/database";
+  import { handleNewPage } from "../util/page";
 
   import { mdiPlus } from "@mdi/js";
   import openStore from "../stores/openStore";
@@ -10,6 +10,7 @@
   import Collection from "../sveltefire/Collection.svelte";
 
   import properties from "../stores/propertyStore";
+  import content from "../stores/contentStore";
 
   export let ref: DocumentReference<DocumentData>;
   export let data: Page;
@@ -20,42 +21,18 @@
     path: string[];
   };
 
-  const db = getFirestore();
   let newPageVisible = false;
   let newPageName: string = "";
-  let newPageDisabled = false;
 
   function toggleOpen() {
     properties.set({ props: data.properties, ref, parentRef: parentProperties.parentRef });
+    content.set(data.content, ref);
     openStore.set(parentProperties.path);
   }
 
-  function cancelNewPage() {
-    newPageDisabled = false;
+  function closeNewPage() {
     newPageVisible = false;
     newPageName = "";
-  }
-
-  async function handleNewPage() {
-    if (newPageName) {
-      newPageDisabled = true;
-      const collectionRef = collection(db, ref.path + "/components");
-
-      await addDoc(collectionRef, {
-        name: newPageName,
-        children: 0,
-        content: {},
-        properties: {
-          name: newPageName,
-        },
-      });
-
-      await updateDoc(ref, {
-        children: increment(1),
-      });
-
-      cancelNewPage();
-    }
   }
 </script>
 
@@ -88,11 +65,10 @@
 
             {#if newPageVisible}
               <InputButton
-                on:cancel={cancelNewPage}
-                on:submit={handleNewPage}
+                on:cancel={closeNewPage}
+                on:submit={() => handleNewPage(newPageName, ref, closeNewPage)}
                 bind:value={newPageName}
                 prependLine={true}
-                disabled={newPageDisabled}
               />
             {/if}
           </div>

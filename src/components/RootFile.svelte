@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { DocumentReference, DocumentData } from "@firebase/firestore";
   import type { Page } from "../types/database";
-  import { getFirestore, collection, addDoc, updateDoc, increment } from "firebase/firestore";
   import { getDoc } from "firebase/firestore";
+  import { handleNewPage } from "../util/page";
 
   import { mdiPlus } from "@mdi/js";
   import Button from "./Button.svelte";
@@ -12,54 +12,33 @@
 
   import openStore from "../stores/openStore";
   import properties from "../stores/propertyStore";
+  import content from "../stores/contentStore";
 
   export let ref: DocumentReference<DocumentData>;
 
-  const db = getFirestore();
+  let data: Page;
   let newPageVisible = false;
   let newPageName: string = "";
-  let newPageDisabled = false;
 
   async function getRootFile() {
     const file = await getDoc(ref);
-    const fileData = file.data() as Page;
+    data = file.data() as Page;
 
-    properties.set({ props: fileData.properties, ref, parentRef: null });
+    properties.set({ props: data.properties, ref, parentRef: null });
+    content.set(data.content, ref);
 
-    return fileData;
+    return data;
   }
 
   function setHome(page: Page) {
     openStore.setHome();
+    content.set([], ref);
     properties.set({ props: page.properties, ref, parentRef: null });
   }
 
-  function cancelNewPage() {
-    newPageDisabled = false;
+  function closeNewPage() {
     newPageVisible = false;
     newPageName = "";
-  }
-
-  async function handleNewPage() {
-    if (newPageName) {
-      newPageDisabled = true;
-      const collectionRef = collection(db, ref.path + "/components");
-
-      await addDoc(collectionRef, {
-        name: newPageName,
-        children: 0,
-        content: {},
-        properties: {
-          name: newPageName,
-        },
-      });
-
-      await updateDoc(ref, {
-        children: increment(1),
-      });
-
-      cancelNewPage();
-    }
   }
 </script>
 
@@ -84,7 +63,12 @@
           </Collection>
 
           {#if newPageVisible}
-            <InputButton on:cancel={cancelNewPage} on:submit={handleNewPage} bind:value={newPageName} prependLine={true} disabled={newPageDisabled} />
+            <InputButton
+              on:cancel={closeNewPage}
+              on:submit={() => handleNewPage(newPageName, ref, closeNewPage)}
+              bind:value={newPageName}
+              prependLine={true}
+            />
           {/if}
         </div>
       </div>

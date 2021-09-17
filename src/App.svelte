@@ -5,7 +5,7 @@
   import RootFile from "./components/RootFile.svelte";
   import Properties from "./widgets/Properties.svelte";
 
-  initializeApp({
+  const initApp = initializeApp({
     apiKey: "AIzaSyCilQEwzkyJPy98VVrtYbjCRah8q_pXfGs",
     authDomain: "construct-page.firebaseapp.com",
     projectId: "construct-page",
@@ -13,6 +13,8 @@
     messagingSenderId: "644552624249",
     appId: "1:644552624249:web:a7c2ffdbda50e1ee10aca8",
   });
+
+  console.log("init", initApp);
 
   const db = getFirestore();
   const docRef = doc(db, "pages", "MWdhMh3lW2vKY1rkjyWl");

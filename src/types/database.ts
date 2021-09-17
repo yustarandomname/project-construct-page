@@ -5,9 +5,17 @@ export interface Properties {
   topFeatures?: string[];
 }
 
+export interface Content {
+  title: string;
+  description: string;
+  image?: string;
+  author?: string;
+  url?: string;
+}
+
 export interface Page {
   name: string;
   children: number;
-  content?: Map<string, string>;
+  content?: Content[];
   properties?: Properties;
 }
