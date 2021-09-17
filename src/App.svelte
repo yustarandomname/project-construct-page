@@ -3,6 +3,7 @@
   import { getFirestore, doc } from "firebase/firestore";
 
   import RootFile from "./components/RootFile.svelte";
+  import Content from "./widgets/Content.svelte";
   import Properties from "./widgets/Properties.svelte";
 
   initializeApp({
@@ -31,7 +32,7 @@
     <div class="header">
       <h1>Content</h1>
     </div>
-    <p style="color:var(--inactive-color)">Hier kun je plaatjes, schetsen, inspiratie, meeting notities, en andere langere content neerzetten</p>
+    <Content />
   </div>
 
   <div class="properties">

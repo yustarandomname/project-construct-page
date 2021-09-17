@@ -9,12 +9,21 @@ interface Content {
   url?: string;
 }
 
+let content = { data: [] as Content[], ref: null as DocumentReference<DocumentData> };
+
 function createContentStore() {
-  const { subscribe, set } = writable({ data: [] as Content[], ref: null as DocumentReference<DocumentData> });
+  const { subscribe, set } = writable(content);
 
   return {
     subscribe,
-    set: (data: Content[], ref: DocumentReference<DocumentData>) => set({ data, ref }),
+    set: (data: Content[], ref: DocumentReference<DocumentData>) => {
+      content = { data, ref };
+      return set(content);
+    },
+    setData: (data: Content[]) => {
+      content.data = data;
+      return set(content);
+    },
   };
 }
 

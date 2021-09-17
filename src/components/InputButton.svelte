@@ -5,11 +5,14 @@
   import SubmitButton from "../components/SubmitButton.svelte";
 
   export let value = "";
-  export let disabled = false;
   export let prependLine = false;
-  export let placeholder = "";
   export let size: "large" | "medium" = "large";
+
+  export let placeholder = "";
+  export let disabled = false;
+  export let required = false;
   export let noCancel = false;
+  export let noSubmit = false;
 
   const dispatch = createEventDispatcher();
   let valueIsChanged = false;
@@ -29,9 +32,9 @@
     <div class="line" />
   {/if}
 
-  <input type="text" class:large={size == "large"} bind:value on:input={() => (valueIsChanged = true)} {disabled} {placeholder} />
+  <input type="text" class:large={size == "large"} bind:value on:input={() => (valueIsChanged = true)} {required} {disabled} {placeholder} />
 
-  {#if valueIsChanged}
+  {#if !noSubmit && valueIsChanged}
     <div class="line" />
     <div on:click={dispatchSubmit}>
       <SubmitButton icon={mdiCheck} {disabled} />

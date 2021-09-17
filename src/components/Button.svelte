@@ -5,17 +5,35 @@
   export let size: "small" | "medium" | "large" = "medium";
   export let icon: string = "";
   export let disabled: boolean = false;
+  export let line: boolean = false;
 </script>
 
-<div class="button {state} {size}" class:disabled on:click>
-  {#if icon}
-    <Icon path={icon} />
+<div class="buttonWrapper">
+  {#if line}
+    <div class="line" />
   {/if}
 
-  <slot />
+  <div class="button {state} {size}" class:disabled on:click>
+    {#if icon}
+      <Icon path={icon} />
+    {/if}
+
+    <slot />
+  </div>
 </div>
 
 <style>
+  .buttonWrapper {
+    display: flex;
+    align-items: center;
+  }
+
+  .line {
+    height: 2px;
+    width: 0.5em;
+    background: var(--inactive-color);
+  }
+
   .button {
     padding: 0.5em;
     margin: var(--margin, 0);

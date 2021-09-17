@@ -38,6 +38,8 @@
   }
 
   const db = getFirestore();
+
+  $: data && content.set(data.content, ref);
 </script>
 
 <div class="file attach-left">

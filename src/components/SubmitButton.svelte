@@ -2,9 +2,10 @@
   import Icon from "./Icon.svelte";
   export let icon: string = "";
   export let disabled: boolean = false;
+  export let large = false;
 </script>
 
-<button type="submit" {disabled}>
+<button type="submit" class:large {disabled}>
   {#if icon}
     <Icon path={icon} />
   {/if}
@@ -14,7 +15,9 @@
 <style>
   button {
     all: unset;
-    margin: var(--margin, 0);
+    padding: var(--margin, 0.2em);
+    margin: var(--padding, 0);
+    background: var(--background, transparent);
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
     width: fit-content;
     cursor: pointer;
@@ -22,8 +25,13 @@
     transition: 1s box-shadow;
     user-select: none;
     border-radius: 50%;
-    padding: 0.2em;
     line-height: 0;
+  }
+
+  button.large {
+    line-height: inherit;
+    border-radius: 0.2em;
+    padding: var(--padding, 0.5em);
   }
 
   button:hover {
