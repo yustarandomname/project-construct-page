@@ -1,10 +1,11 @@
 <script lang="ts">
   import type { DocumentReference, DocumentData } from "@firebase/firestore";
   import type { Page } from "../types/database";
-  import { getDoc } from "firebase/firestore";
+  import { getFirestore, getDoc } from "firebase/firestore";
+  import { mdiPlus } from "@mdi/js";
+
   import { handleNewPage } from "../util/page";
 
-  import { mdiPlus } from "@mdi/js";
   import Button from "./Button.svelte";
   import InputButton from "./InputButton.svelte";
   import File from "./File.svelte";
@@ -40,14 +41,16 @@
     newPageVisible = false;
     newPageName = "";
   }
+
+  const db = getFirestore();
 </script>
 
 {#await getRootFile()}
-  <Button state="active">Home</Button>
+  <Button state="active">Root</Button>
 {:then data}
   {#if data.children > 0 || newPageVisible}
     <div class="attach-below">
-      <Button state="active" on:click={() => setHome(data)}>{data.name}</Button>
+      <Button state="active" on:click={() => setHome(data)}>{data.properties.name}</Button>
 
       <div class="content">
         <div class="line" />
@@ -57,7 +60,7 @@
               <File
                 ref={child.ref}
                 data={child}
-                parentProperties={{ props: data.properties, ref: child.ref, parentRef: ref, path: ["Home", child?.properties.name] }}
+                parentProperties={{ props: data.properties, ref: child.ref, parentRef: ref, path: ["Root", child?.properties.name] }}
               />
             {/each}
           </Collection>
@@ -65,7 +68,7 @@
           {#if newPageVisible}
             <InputButton
               on:cancel={closeNewPage}
-              on:submit={() => handleNewPage(newPageName, ref, closeNewPage)}
+              on:submit={() => handleNewPage(db, newPageName, ref, closeNewPage)}
               bind:value={newPageName}
               prependLine={true}
             />
@@ -76,7 +79,7 @@
     </div>
   {:else}
     <div class="attach-right">
-      <Button state="active">{data.name}</Button>
+      <Button state="active">{data.properties.name}</Button>
 
       <div class="line" />
       <Button size="small" icon={mdiPlus} on:click={() => (newPageVisible = true)} />

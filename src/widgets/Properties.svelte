@@ -72,7 +72,7 @@
 
   async function deleteRef() {
     // TODO: implement: are you sure dialog
-    if ($properties.props.name == "Home") return;
+    if ($properties.props.name == "Root") return;
 
     await deleteDoc($properties.ref);
     await updateDoc($properties.parentRef, {

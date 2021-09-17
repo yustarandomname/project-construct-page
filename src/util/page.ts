@@ -1,9 +1,7 @@
-import type { DocumentReference, DocumentData } from "@firebase/firestore";
-import { getFirestore, collection, addDoc, updateDoc, increment } from "firebase/firestore";
+import type { DocumentReference, DocumentData, Firestore } from "@firebase/firestore";
+import { collection, addDoc, updateDoc, increment } from "firebase/firestore";
 
-const db = getFirestore();
-
-export const handleNewPage = async (name: string, ref: DocumentReference<DocumentData>, next: () => void) => {
+export const handleNewPage = async (db: Firestore, name: string, ref: DocumentReference<DocumentData>, next: () => void) => {
   if (name) {
     const collectionRef = collection(db, ref.path + "/components");
 

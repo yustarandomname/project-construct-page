@@ -1,6 +1,8 @@
 <script lang="ts">
   import type { DocumentReference, DocumentData } from "@firebase/firestore";
   import type { Page, Properties } from "../types/database";
+
+  import { getFirestore } from "firebase/firestore";
   import { handleNewPage } from "../util/page";
 
   import { mdiPlus } from "@mdi/js";
@@ -24,7 +26,7 @@
   let newPageVisible = false;
   let newPageName: string = "";
 
-  function toggleOpen() {
+  function openPage() {
     properties.set({ props: data.properties, ref, parentRef: parentProperties.parentRef });
     content.set(data.content, ref);
     openStore.set(parentProperties.path);
@@ -34,13 +36,15 @@
     newPageVisible = false;
     newPageName = "";
   }
+
+  const db = getFirestore();
 </script>
 
 <div class="file attach-left">
   <div class="line" class:hasPermission={false} />
   {#if data.children > 0 || newPageVisible}
     <div class="attach-below">
-      <Button state={$openStore.last == data.properties.name ? "active" : "default"} on:click={toggleOpen}
+      <Button state={$openStore.last == data.properties.name ? "active" : "default"} on:click={openPage}
         >{data.properties.name} ({data.children})</Button
       >
 
@@ -66,7 +70,7 @@
             {#if newPageVisible}
               <InputButton
                 on:cancel={closeNewPage}
-                on:submit={() => handleNewPage(newPageName, ref, closeNewPage)}
+                on:submit={() => handleNewPage(db, newPageName, ref, closeNewPage)}
                 bind:value={newPageName}
                 prependLine={true}
               />
@@ -81,7 +85,7 @@
     </div>
   {:else}
     <div class="attach-right">
-      <Button state={$openStore.last == data.properties.name ? "active" : "default"} on:click={toggleOpen}
+      <Button state={$openStore.last == data.properties.name ? "active" : "default"} on:click={openPage}
         >{data.properties.name} ({data.children})</Button
       >
 
