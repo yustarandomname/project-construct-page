@@ -2,12 +2,14 @@
   import properties from "../stores/propertyStore";
   import Button from "../components/Button.svelte";
   import InputButton from "../components/InputButton.svelte";
-  import { mdiArrowUp, mdiArrowDown, mdiDelete, mdiPlus, mdiExclamation, mdiUpdate } from "@mdi/js";
+  import DropdownButton from "../components/DropdownButton.svelte";
+  import { mdiDelete, mdiPlus, mdiUpdate } from "@mdi/js";
   import { deleteDoc, updateDoc, increment } from "firebase/firestore";
 
   let changes = 0;
   let newPermission = "";
   let addPermissionInput = false;
+  let importance = 0;
 
   function onInit(p) {
     let newProperties = { ...$properties };
@@ -90,21 +92,10 @@
 
 <div class="propertyWrapper">
   <div class="subHeader">Name</div>
-  <InputButton
-    --margin="0em"
-    on:submit={() => {
-      console.log("set props name", $properties.props.name);
-      setProperties($properties);
-    }}
-    bind:value={$properties.props.name}
-    noCancel
-  />
+  <InputButton --margin="0em" on:submit={() => setProperties($properties)}, bind:value={$properties.props.name} noCancel />
 
-  <div class="subHeader">Move</div>
-  <div class="splitButtons">
-    <Button size="large" icon={mdiArrowUp} disabled>Up</Button>
-    <Button size="large" icon={mdiArrowDown} disabled>Down</Button>
-  </div>
+  <div class="subHeader">Importance</div>
+  <DropdownButton options={["None", "Lower", "Low", "Normal", "High", "Higher", "Urgent", "Fix now"]} bind:value={importance} />
 
   <div class="subHeader">Permissions</div>
   {#if $properties.props.permissions}
@@ -165,10 +156,5 @@
 
   .subHeader:not(:first-child) {
     margin-top: 1em;
-  }
-
-  .splitButtons {
-    display: flex;
-    gap: 1em;
   }
 </style>

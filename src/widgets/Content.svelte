@@ -30,7 +30,7 @@
 
   // Send link to server to return (meta/header) content
   async function handleLink() {
-    const urlData = await fetch(`http://localhost:3000/scraper?link=${contentData.url}`);
+    const urlData = await fetch(`https://shielded-bayou-35691.herokuapp.com/scraper?link=${contentData.url}`);
     const data = await urlData.json();
     console.log(data);
 
@@ -59,8 +59,8 @@
   <form on:submit|preventDefault={addContent}>
     <InputButton placeholder="Title" bind:value={contentData.title} noSubmit noCancel required />
     <InputButton placeholder="Description" bind:value={contentData.description} noSubmit noCancel required />
-    <InputButton placeholder="URL" on:submit={handleLink} bind:value={contentData.url} noCancel />
-    <InputButton placeholder="Image" bind:value={contentData.image} noCancel />
+    <InputButton placeholder="Link url" on:submit={handleLink} bind:value={contentData.url} noCancel />
+    <InputButton placeholder="Image url" bind:value={contentData.image} noCancel />
 
     <SubmitButton large --background="var(--active-color)">Submit</SubmitButton>
   </form>
