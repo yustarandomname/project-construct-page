@@ -92,7 +92,7 @@
 
 <div class="propertyWrapper">
   <div class="subHeader">Name</div>
-  <InputButton --margin="0em" on:submit={() => setProperties($properties)}, bind:value={$properties.props.name} noCancel />
+  <InputButton --margin="0em" on:submit={() => setProperties($properties)} bind:value={$properties.props.name} noCancel />
 
   <div class="subHeader">Importance</div>
   <DropdownButton options={["None", "Lower", "Low", "Normal", "High", "Higher", "Urgent", "Fix now"]} bind:value={importance} />
