@@ -4,6 +4,7 @@
 
   import { getFirestore } from "firebase/firestore";
   import { handleNewPage } from "../util/page";
+  import { importanceNames } from "../util/importance";
 
   import { mdiPlus } from "@mdi/js";
   import openStore from "../stores/openStore";
@@ -43,6 +44,10 @@
 </script>
 
 <div class="file attach-left">
+  {#if data.properties.importance > 0}
+    <div class="importance">{importanceNames[data.properties.importance]}</div>
+  {/if}
+
   <div class="line" class:hasPermission={false} />
   {#if data.children > 0 || newPageVisible}
     <div class="attach-below">
@@ -54,7 +59,7 @@
         <div class="content">
           <div class="line" />
           <div class="pages">
-            <Collection path={ref.path + "/components"} let:data={children}>
+            <Collection path={ref.path + "/components"} sortBy="properties.importance" sortByDirection="desc" let:data={children}>
               {#each children as child}
                 <svelte:self
                   ref={child.ref}
@@ -101,6 +106,17 @@
   /* Global */
   .file {
     margin: 0.75rem 0;
+    position: relative;
+  }
+
+  .importance {
+    position: absolute;
+    left: 1rem;
+    top: -0.35rem;
+    /* background: white; */
+    color: var(--inactive-color);
+    text-transform: uppercase;
+    font-size: 0.6em;
   }
 
   /* Start / End */

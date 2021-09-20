@@ -73,7 +73,9 @@
     {/each}
   </div>
 {:else}
-  <p style="color:var(--inactive-color)">Hier kun je plaatjes, schetsen, inspiratie, meeting notities, en andere langere content neerzetten</p>
+  <p style="color:var(--inactive-color); text-align: center;">
+    Hier kun je plaatjes, schetsen, inspiratie, meeting notities, en andere langere content neerzetten
+  </p>
 {/if}
 
 <style>

@@ -1,7 +1,10 @@
 <script lang="ts">
   import { initializeApp } from "firebase/app";
   import { getFirestore, doc } from "firebase/firestore";
+  import { mdiClose, mdiChevronLeft } from "@mdi/js";
+  import { fly } from "svelte/transition";
 
+  import Button from "./components/Button.svelte";
   import RootFile from "./components/RootFile.svelte";
   import Content from "./widgets/Content.svelte";
   import Properties from "./widgets/Properties.svelte";
@@ -17,6 +20,7 @@
 
   const db = getFirestore();
   const docRef = doc(db, "pages", "MWdhMh3lW2vKY1rkjyWl");
+  let propertiesVisible = true;
 </script>
 
 <div class="wrapper">
@@ -35,17 +39,29 @@
     <Content />
   </div>
 
-  <div class="properties">
-    <div class="header">
-      <h1>Properties</h1>
+  {#if propertiesVisible}
+    <div class="properties" transition:fly={{ x: 200 }}>
+      <div class="header">
+        <h1>Properties</h1>
+      </div>
+      <Properties />
     </div>
-    <Properties />
-  </div>
+
+    <div class="positionButton">
+      <Button on:click={() => (propertiesVisible = false)} icon={mdiClose} />
+    </div>
+  {:else}
+    <div class="positionButton">
+      <Button on:click={() => (propertiesVisible = true)} icon={mdiChevronLeft} />
+    </div>
+  {/if}
 </div>
 
 <style>
   .wrapper {
     display: flex;
+    width: 100vw;
+    overflow-y: hidden;
   }
 
   .tree,
@@ -78,5 +94,11 @@
     align-items: center;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(4px) saturate(1.5);
+  }
+
+  .positionButton {
+    position: fixed;
+    right: 2em;
+    top: 1.5em;
   }
 </style>

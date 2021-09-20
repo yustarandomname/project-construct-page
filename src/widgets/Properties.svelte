@@ -3,19 +3,22 @@
   import Button from "../components/Button.svelte";
   import InputButton from "../components/InputButton.svelte";
   import DropdownButton from "../components/DropdownButton.svelte";
-  import { mdiDelete, mdiPlus, mdiUpdate } from "@mdi/js";
+  import { importanceNames } from "../util/importance";
+  import { mdiDelete, mdiPlus } from "@mdi/js";
   import { deleteDoc, updateDoc, increment } from "firebase/firestore";
 
-  let changes = 0;
   let newPermission = "";
   let addPermissionInput = false;
-  let importance = 0;
 
   function onInit(p) {
     let newProperties = { ...$properties };
 
     if (!newProperties.props?.topFeatures) {
       newProperties.props.topFeatures = ["", "", ""];
+    }
+
+    if (!newProperties.props?.importance) {
+      newProperties.props.importance = 0;
     }
 
     properties.set(newProperties);
@@ -82,11 +85,6 @@
     });
   }
 
-  async function updateRef() {
-    // TODO: implement updating ref
-    console.log("update");
-  }
-
   $: onInit($properties);
 </script>
 
@@ -95,7 +93,15 @@
   <InputButton --margin="0em" on:submit={() => setProperties($properties)} bind:value={$properties.props.name} noCancel />
 
   <div class="subHeader">Importance</div>
-  <DropdownButton options={["None", "Lower", "Low", "Normal", "High", "Higher", "Urgent", "Fix now"]} bind:value={importance} />
+  <DropdownButton
+    options={importanceNames}
+    on:submit={() => setProperties($properties)}
+    on:cancel={() => {
+      $properties.props.importance = 0;
+      setProperties($properties);
+    }}
+    bind:value={$properties.props.importance}
+  />
 
   <div class="subHeader">Permissions</div>
   {#if $properties.props.permissions}
@@ -139,9 +145,6 @@
 
   <div class="subHeader">Actions</div>
   <Button size="large" icon={mdiDelete} state="destructive" on:click={deleteRef}>Delete</Button>
-  {#if changes > 0}
-    <Button size="large" icon={mdiUpdate} state="active" on:click={updateRef}>Update</Button>
-  {/if}
 </div>
 
 <style>

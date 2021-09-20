@@ -8,7 +8,7 @@ export const handleNewPage = async (db: Firestore, name: string, ref: DocumentRe
     await addDoc(collectionRef, {
       children: 0,
       content: [],
-      properties: { name },
+      properties: { name, importance: 0 },
     });
 
     await updateDoc(ref, {

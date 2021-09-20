@@ -55,7 +55,7 @@
       <div class="content">
         <div class="line" />
         <div class="pages">
-          <Collection path={ref.path + "/components"} let:data={children}>
+          <Collection sortBy="properties.importance" sortByDirection="desc" path={ref.path + "/components"} let:data={children}>
             {#each children as child}
               <File
                 ref={child.ref}

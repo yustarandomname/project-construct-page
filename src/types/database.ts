@@ -1,6 +1,7 @@
 export interface Properties {
   name: string;
   index?: number;
+  importance?: number;
   permissions?: string[];
   topFeatures?: string[];
 }
