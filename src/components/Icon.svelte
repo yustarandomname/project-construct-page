@@ -5,6 +5,7 @@
   export let size: number = 1;
   export let flip: Flip = null;
   export let rotate: number = 0;
+  export let spin: boolean = false;
   export let title = "";
 
   const getStyles = (size: number, flip: Flip, rotate: number) => {
@@ -34,7 +35,7 @@
   $: style = getStyles(size, flip, rotate);
 </script>
 
-<svg viewBox="0 0 24 24" {style}>
+<svg viewBox="0 0 24 24" class:spin {style}>
   {#if title}<title>{title}</title>{/if}
 
   <path d={path} />
@@ -43,6 +44,19 @@
 <style>
   svg {
     vertical-align: middle;
-    fill: var(color, "black");
+    fill: var(--color, "black");
+  }
+
+  .spin {
+    animation: spin 1s infinite cubic-bezier(0.79, 0.14, 0.15, 0.86);
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 </style>

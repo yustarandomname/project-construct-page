@@ -24,6 +24,14 @@ function createContentStore() {
       content.data = data;
       return set(content);
     },
+    addData: (data: Content) => {
+      content.data = [...content.data, data];
+      return set(content);
+    },
+    removeData: (data: Content) => {
+      content.data = content.data.filter((item) => item !== data);
+      return set(content);
+    },
   };
 }
 

@@ -140,8 +140,8 @@
     />
   {/each}
 
-  <div class="subHeader">Quick Notes</div>
-  <Button size="large" icon={mdiPlus}>Add Note</Button>
+  <!-- <div class="subHeader">Quick Notes</div>
+  <Button size="large" icon={mdiPlus}>Add Note</Button> -->
 
   <div class="subHeader">Actions</div>
   <Button size="large" icon={mdiDelete} state="destructive" on:click={deleteRef}>Delete</Button>

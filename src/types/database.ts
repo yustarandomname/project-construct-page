@@ -12,6 +12,7 @@ export interface Content {
   image?: string;
   author?: string;
   url?: string;
+  type: "link" | "text" | "image" | "none";
 }
 
 export interface Page {

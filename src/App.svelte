@@ -1,7 +1,7 @@
 <script lang="ts">
   import { initializeApp } from "firebase/app";
   import { getFirestore, doc } from "firebase/firestore";
-  import { mdiClose, mdiChevronLeft } from "@mdi/js";
+  import { mdiClose, mdiChevronLeft, mdiGithub } from "@mdi/js";
   import { fly } from "svelte/transition";
 
   import Button from "./components/Button.svelte";
@@ -55,6 +55,10 @@
       <Button on:click={() => (propertiesVisible = true)} icon={mdiChevronLeft} />
     </div>
   {/if}
+
+  <div class="positionButton positionGithub">
+    <Button on:click={() => window.open("https://github.com/yustarandomname/project-construct-page", "_blank")} icon={mdiGithub} />
+  </div>
 </div>
 
 <style>
@@ -100,5 +104,9 @@
     position: fixed;
     right: 2em;
     top: 1.5em;
+  }
+
+  .positionButton.positionGithub {
+    right: 5em;
   }
 </style>

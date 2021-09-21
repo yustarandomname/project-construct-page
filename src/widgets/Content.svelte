@@ -5,65 +5,104 @@
 
   import content from "../stores/contentStore";
 
+  import Button from "../components/Button.svelte";
   import InputButton from "../components/InputButton.svelte";
   import SubmitButton from "../components/SubmitButton.svelte";
   import ContentCard from "../components/ContentCard.svelte";
+  import { mdiCancel, mdiImage, mdiLink, mdiSend, mdiText } from "@mdi/js";
 
-  let contentData: Content = {
+  let submitLoading = false;
+  let newContent: Content = {
     title: "",
     description: "",
     image: "",
     author: "",
     url: "",
+    type: "none",
   };
+  let defaultNewContent = { ...newContent };
 
   // Reset the form
   function resetContentData() {
-    contentData = {
-      title: "",
-      description: "",
-      image: "",
-      author: "",
-      url: "",
-    };
+    newContent = { ...defaultNewContent };
+    submitLoading = false;
+  }
+
+  // Send the content to the database
+  async function addContent() {
+    submitLoading = true;
+    await updateDoc($content.ref, {
+      content: arrayUnion(newContent),
+    });
+
+    content.addData(newContent);
+
+    // Reset the form content data
+    resetContentData();
   }
 
   // Send link to server to return (meta/header) content
   async function handleLink() {
-    const urlData = await fetch(`https://shielded-bayou-35691.herokuapp.com/scraper?link=${contentData.url}`);
+    submitLoading = true;
+    const urlData = await fetch(`https://shielded-bayou-35691.herokuapp.com/scraper?link=${newContent.url}`);
     const data = await urlData.json();
-    console.log(data);
 
-    contentData = {
-      title: contentData.image || data.title,
-      description: contentData.image || data.description,
-      image: contentData.image || data.image,
+    newContent = {
+      title: newContent.image || data.title,
+      description: newContent.description || data.description,
+      image: newContent.image || data.image,
       url: data.url,
       author: data.author,
+      type: newContent.type,
     };
+
+    addContent();
   }
 
-  async function addContent() {
-    // Add the content to the database
-    await updateDoc($content.ref, {
-      content: arrayUnion(contentData),
-    });
-
-    // Reset the form content data
-    resetContentData();
+  function handleImage() {
+    console.log(newContent.image);
   }
 </script>
 
 <div class="newContent">
   <div class="subHeader">Add new Content</div>
-  <form on:submit|preventDefault={addContent}>
-    <InputButton placeholder="Title" bind:value={contentData.title} noSubmit noCancel required />
-    <InputButton placeholder="Description" bind:value={contentData.description} noSubmit noCancel required />
-    <InputButton placeholder="Link url" on:submit={handleLink} bind:value={contentData.url} noCancel />
-    <InputButton placeholder="Image url" bind:value={contentData.image} noCancel />
+  {#if newContent.type == "none"}
+    <div class="newContentSplit">
+      <Button on:click={() => (newContent.type = "link")} icon={mdiLink}>New link</Button>
+      <Button on:click={() => (newContent.type = "text")} icon={mdiText}>New Text</Button>
+      <Button on:click={() => (newContent.type = "image")} icon={mdiImage}>New image</Button>
+    </div>
+  {:else if newContent.type == "link"}
+    <form on:submit|preventDefault={handleLink}>
+      <InputButton placeholder="Title" bind:value={newContent.title} noSubmit noCancel />
+      <InputButton placeholder="Link url" bind:value={newContent.url} noSubmit noCancel />
 
-    <SubmitButton large --background="var(--active-color)">Submit</SubmitButton>
-  </form>
+      <div class="newContentSplit">
+        <Button on:click={resetContentData} icon={mdiCancel}>Cancel</Button>
+        <SubmitButton large loading={submitLoading} icon={mdiSend} --background="var(--active-color)">Submit</SubmitButton>
+      </div>
+    </form>
+  {:else if newContent.type == "text"}
+    <form on:submit|preventDefault={addContent}>
+      <InputButton placeholder="Title" bind:value={newContent.title} noSubmit noCancel />
+      <InputButton placeholder="Description" bind:value={newContent.description} noSubmit noCancel />
+
+      <div class="newContentSplit">
+        <Button on:click={resetContentData} icon={mdiCancel}>Cancel</Button>
+        <SubmitButton large loading={submitLoading} icon={mdiSend} --background="var(--active-color)">Submit</SubmitButton>
+      </div>
+    </form>
+  {:else if newContent.type == "image"}
+    <form on:submit|preventDefault={addContent}>
+      <InputButton placeholder="Title" bind:value={newContent.title} noSubmit noCancel />
+      <InputButton placeholder="Image url" bind:value={newContent.image} noSubmit noCancel />
+
+      <div class="newContentSplit">
+        <Button on:click={resetContentData} icon={mdiCancel}>Cancel</Button>
+        <SubmitButton large loading={submitLoading} icon={mdiSend} --background="var(--active-color)">Submit</SubmitButton>
+      </div>
+    </form>
+  {/if}
 </div>
 
 {#if $content.data.length}
@@ -88,5 +127,11 @@
   .subHeader {
     font-size: 1.25em;
     font-weight: bold;
+  }
+
+  .newContentSplit {
+    display: flex;
+    gap: 1em;
+    margin-top: 0.5em;
   }
 </style>

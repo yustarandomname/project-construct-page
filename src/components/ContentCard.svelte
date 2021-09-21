@@ -1,9 +1,10 @@
 <script lang="ts">
   import type { DocumentReference, DocumentData } from "@firebase/firestore";
-  import { updateDoc, arrayRemove } from "firebase/firestore";
-
   import type { Content } from "../types/database";
+
+  import { updateDoc, arrayRemove } from "firebase/firestore";
   import { mdiOpenInNew, mdiClose } from "@mdi/js";
+  import content from "../stores/contentStore";
 
   import Icon from "./Icon.svelte";
   import Button from "./Button.svelte";
@@ -15,6 +16,7 @@
     await updateDoc(ref, {
       content: arrayRemove(data),
     });
+    content.removeData(data);
   }
 </script>
 
