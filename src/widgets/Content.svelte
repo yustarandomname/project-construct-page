@@ -48,7 +48,7 @@
     const data = await urlData.json();
 
     newContent = {
-      title: newContent.image || data.title,
+      title: newContent.title || data.title,
       description: newContent.description || data.description,
       image: newContent.image || data.image,
       url: data.url,

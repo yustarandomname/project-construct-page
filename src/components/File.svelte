@@ -1,4 +1,5 @@
 <script lang="ts">
+  import toAscii from "punycode2/to-ascii";
   import type { DocumentReference, DocumentData } from "@firebase/firestore";
   import type { Page, Properties } from "../types/database";
 
@@ -39,6 +40,8 @@
   }
 
   const db = getFirestore();
+
+  console.log("\uD83D\uDE03", toAscii("\uD83D\uDE03"));
 </script>
 
 <div class="file attach-left">
