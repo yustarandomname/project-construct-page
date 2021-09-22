@@ -8,8 +8,9 @@
   import Button from "../components/Button.svelte";
   import InputButton from "../components/InputButton.svelte";
   import SubmitButton from "../components/SubmitButton.svelte";
+  import ImageButton from "../components/ImageButton.svelte";
   import ContentCard from "../components/ContentCard.svelte";
-  import { mdiCancel, mdiImage, mdiLink, mdiSend, mdiText } from "@mdi/js";
+  import { mdiCancel, mdiDetails, mdiImage, mdiLink, mdiSend, mdiText } from "@mdi/js";
 
   let submitLoading = false;
   let newContent: Content = {
@@ -94,8 +95,20 @@
     </form>
   {:else if newContent.type == "image"}
     <form on:submit|preventDefault={addContent}>
-      <InputButton placeholder="Title" bind:value={newContent.title} noSubmit noCancel />
-      <InputButton placeholder="Image url" bind:value={newContent.image} noSubmit noCancel />
+      <div class="newContentSplit">
+        <div class="input">
+          <InputButton placeholder="Title" bind:value={newContent.title} noSubmit noCancel />
+          <ImageButton
+            on:save={(data) => {
+              newContent.image = data.detail.url;
+              newContent.title = newContent.title || data.detail.title;
+            }}
+          />
+        </div>
+        {#if newContent.image}
+          <div class="preview" style="background: url({newContent.image});" />
+        {/if}
+      </div>
 
       <div class="newContentSplit">
         <Button on:click={resetContentData} icon={mdiCancel}>Cancel</Button>
@@ -133,5 +146,11 @@
     display: flex;
     gap: 1em;
     margin-top: 0.5em;
+  }
+
+  .preview {
+    background-size: cover !important;
+    background-position: center !important;
+    width: 10em;
   }
 </style>

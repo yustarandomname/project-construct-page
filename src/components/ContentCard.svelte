@@ -40,7 +40,7 @@
 
   <div class="actions">
     {#if data.type !== "text"}
-      <Button on:click={() => window.open(data.url, "_blank").focus()} icon={mdiOpenInNew} line size="small" />
+      <Button on:click={() => window.open(data.url || data.image, "_blank").focus()} icon={mdiOpenInNew} line size="small" />
     {/if}
     <Button on:click={removeContent} icon={mdiClose} line size="small" />
   </div>
